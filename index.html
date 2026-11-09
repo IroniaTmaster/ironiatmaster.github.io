@@ -1,66 +1,425 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
     <html lang="pt-BR">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Ironia_root | Portfolio</title>
+      <title>Ironia_root // Reverse Engineering Lab</title>
+
+      <!-- Tailwind CSS via CDN -->
+      <script src="https://cdn.tailwindcss.com"></script>
+      <!-- Marked.js para interpretar Markdown -->
+      <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+      <!-- Highlight.js para destaque de Assembly, C++, Python e C# -->
+      <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/armasm.min.js"></script>
+
       <style>
-        :root {
-          --bg: #0d1117;
-          --card-bg: #161b22;
-          --border: #30363d;
-          --text: #c9d1d9;
-          --accent: #58a6ff;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        @import
+        url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;600;800&display
+        =swap');
+
         body {
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-          background-color: var(--bg);
-          color: var(--text);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 100vh;
-          padding: 20px;
+          background-color: #07090e;
+          color: #cbd5e1;
+          font-family: 'Inter', sans-serif;
         }
-        .card {
-          background: var(--card-bg);
-          border: 1px solid var(--border);
-          border-radius: 12px;
-          padding: 32px;
-          max-width: 520px;
-          width: 100%;
-          text-align: center;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        .font-mono-code {
+          font-family: 'Fira Code', monospace;
         }
-        .avatar {
-          width: 110px;
-          height: 110px;
-          border-radius: 50%;
-          border: 2px solid var(--accent);
-          margin-bottom: 16px;
+        /* Estilização do Leitor de Artigo em Markdown */
+        .prose code {
+          font-family: 'Fira Code', monospace;
+          background-color: #0f172a;
+          color: #38bdf8;
+          padding: 0.2rem 0.4rem;
+          border-radius: 4px;
+          font-size: 0.85em;
+          border: 1px solid #1e293b;
         }
-        h1 { color: #f0f6fc; font-size: 1.6rem; margin-bottom: 6px; }
-        p.subtitle { color: #8b949e; margin-bottom: 20px; font-size: 0.95rem; }
-        .btn {
-          display: inline-block;
-          padding: 10px 20px;
-          background: var(--accent);
-          color: #0d1117;
-          font-weight: 600;
-          text-decoration: none;
-          border-radius: 6px;
-          transition: opacity 0.2s;
+        .prose pre {
+          background-color: #0a0f1d !important;
+          border: 1px solid #1e293b;
+          border-radius: 8px;
+          padding: 1.25rem;
+          position: relative;
+          margin: 1.5rem 0;
+          overflow-x: auto;
         }
-        .btn:hover { opacity: 0.85; }
+        .prose pre code {
+          background: transparent;
+          padding: 0;
+          border: none;
+          color: inherit;
+        }
+        .prose h1, .prose h2, .prose h3 {
+          color: #f1f5f9;
+          font-weight: 700;
+          margin-top: 2rem;
+          margin-bottom: 0.75rem;
+          border-bottom: 1px solid #1e293b;
+          padding-bottom: 0.4rem;
+        }
+        .prose p { margin-bottom: 1.2rem; line-height: 1.8; color: #94a3b8; }
+        .prose ul, .prose ol { margin-left: 1.5rem; margin-bottom: 1.2rem; color: #94a3b8; }
+        .prose li { margin-bottom: 0.4rem; }
+        .prose blockquote {
+          border-left: 3px solid #10b981;
+          background-color: #09131a;
+          padding: 0.75rem 1rem;
+          border-radius: 0 8px 8px 0;
+          margin: 1.5rem 0;
+          color: #a7f3d0;
+          font-size: 0.95rem;
+        }
       </style>
     </head>
-    <body>
-      <div class="card">
-        <img class="avatar" src="https://avatars.githubusercontent.com/u/43657686?v=4" alt="Avatar">
-        <h1>Ironia_root</h1>
-        <p class="subtitle">Bem-vindo à minha página oficial no GitHub Pages!</p>
-        <a class="btn" href="https://github.com/IroniaTmaster" target="_blank" rel="noopener">Ver Perfil no GitHub</a>
+    <body class="min-h-screen flex flex-col antialiased selection:bg-cyan-500 selection:text-black">
+
+      <!-- Terminal Top Banner -->
+      <div class="bg-black/60 border-b border-slate-800/80 px-4 py-1.5 text-xs font-mono-code text-slate-400 flex
+      justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>LAB_STATUS: ONLINE</span>
+          <span class="text-slate-600">|</span>
+          <span>ENV: ARM64 / IL2CPP / NATIVE</span>
+        </div>
+        <div class="text-slate-500 hidden sm:block">
+          TARGET: DISASSEMBLY & DYNAMIC ANALYSIS
+        </div>
       </div>
+
+      <!-- Header -->
+      <header class="border-b border-slate-800 bg-[#0a0d14]/90 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3 cursor-pointer" onclick="showHome()">
+            <img class="w-10 h-10 rounded-lg border border-emerald-500/40 p-0.5 bg-slate-900"
+            src="https://avatars.githubusercontent.com/u/43657686?v=4" alt="Ironia_root">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-lg text-slate-100 font-mono-code hover:text-emerald-400
+                transition">Ironia_root</span>
+                <span class="text-[10px] bg-emerald-950/80 text-emerald-400 border border-emerald-800 px-1.5 py-0.5
+                rounded font-mono-code">RE</span>
+              </div>
+              <p class="text-xs text-slate-400">Reverse Engineering, Deobfuscation & Binary Analysis</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-3">
+            <a href="https://github.com/IroniaTmaster" target="_blank" rel="noopener" class="text-xs font-mono-code
+            bg-slate-900 hover:bg-slate-800 text-slate-300 px-3 py-1.5 rounded-md border border-slate-700/80
+            transition flex items-center gap-2">
+              <span>gh/IroniaTmaster</span>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Conteúdo Principal -->
+      <main class="max-w-4xl mx-auto px-4 py-8 flex-1 w-full">
+
+        <!-- TELA 1: FEED DE PESQUISAS -->
+        <div id="home-view">
+
+          <!-- Box de Apresentação Técnica -->
+          <section class="mb-8 p-6 bg-[#0c101b] border border-slate-800/90 rounded-xl relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-32 h-32 bg-emerald-500/5 blur-3xl pointer-events-none"></div>
+            <h1 class="text-xl font-bold text-slate-100 font-mono-code mb-2 flex items-center gap-2">
+              <span class="text-emerald-400">></span> Caderno de Pesquisas de Engenharia Reversa
+            </h1>
+            <p class="text-slate-400 text-sm leading-relaxed mb-4">
+              Espaço dedicado à documentação de análises estáticas e dinâmicas, desofuscação de binários
+              nativos/IL2CPP, bypassing de proteções anti-tamper e criação de ferramentas de reconstrução de símbolos.
+            </p>
+            <div class="flex flex-wrap gap-3 text-xs font-mono-code text-slate-400">
+              <span class="bg-slate-900 px-2 py-1 rounded border border-slate-800">🔬 IDA Pro / Ghidra</span>
+              <span class="bg-slate-900 px-2 py-1 rounded border border-slate-800">⚡ Frida Dynamic Hooking</span>
+              <span class="bg-slate-900 px-2 py-1 rounded border border-slate-800">🧩 IL2CPP Memory Dumper</span>
+            </div>
+          </section>
+
+          <!-- Busca e Filtros de Tags -->
+          <div class="mb-6 space-y-3">
+            <div class="relative">
+              <input
+                type="text"
+                id="search-input"
+                placeholder="Pesquisar por símbolos, syscalls, termos (ex: IL2CPP, Frida, ARM64)..."
+                class="w-full bg-[#0a0f1d] border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200
+                placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono-code transition"
+                oninput="filterPosts()"
+              />
+            </div>
+            <div id="tags-container" class="flex flex-wrap gap-2 text-xs font-mono-code">
+              <!-- Gerado via JS -->
+            </div>
+          </div>
+
+          <!-- Lista de Artigos de RE -->
+          <div id="posts-list" class="space-y-4">
+            <!-- Renderizado dinamicamente -->
+          </div>
+        </div>
+
+        <!-- TELA 2: VISUALIZADOR DE RELATÓRIO/ARTIGO -->
+        <div id="post-view" class="hidden">
+          <button onclick="showHome()" class="mb-6 inline-flex items-center gap-2 text-xs font-mono-code
+          text-emerald-400 hover:text-emerald-300 transition">
+            ← [VOLTAR PARA O ÍNDICE]
+          </button>
+          <article class="bg-[#0c101b] border border-slate-800 rounded-xl p-6 sm:p-8 shadow-2xl">
+            <header class="border-b border-slate-800 pb-5 mb-6">
+              <div class="flex items-center gap-3 text-xs font-mono-code text-slate-400 mb-3">
+                <span id="article-date"></span>
+                <span>•</span>
+                <span id="article-read-time"></span>
+              </div>
+              <h1 id="article-title" class="text-2xl sm:text-3xl font-bold font-mono-code text-slate-100 mb-4"></h1>
+              <div id="article-tags" class="flex flex-wrap gap-2"></div>
+            </header>
+            <div id="article-content" class="prose max-w-none text-slate-300"></div>
+          </article>
+        </div>
+
+      </main>
+
+      <footer class="border-t border-slate-800/80 py-6 text-center text-xs font-mono-code text-slate-500">
+        [!] Ironia_root RE Lab • Documentações de Pesquisa & PoCs
+      </footer>
+
+      <!-- SCRIPT & BANCO DE ARTIGOS -->
+      <script>
+        // ========================================================
+        // 📂 SEUS ARTIGOS DE ENGENHARIA REVERSA:
+        // Basta adicionar novos objetos no array 'posts' abaixo.
+        // Suporta código em C++, Python, ARM Assembly, C#, etc.
+        // ========================================================
+        const posts = [
+          {
+            id: "desofuscacao-il2cpp-reconstrucao-metadados",
+            title: "Desofuscação Dinâmica e Reconstrução de Metadados IL2CPP no Android",
+            date: "08/11/2026",
+            readTime: "8 min de leitura",
+            tags: ["IL2CPP & Unity", "Desofuscação", "ARM64 & NDK"],
+            summary: "Análise aprofundada de proteções proprietárias aplicadas sobre o global-metadata.dat e
+            libil2cpp.so: extração de type definitions em memória e reconstrução de dummies legíveis.",
+            content: `
+    ## Contexto da Análise
+
+    Muitos protetores mobile e ofuscadores comerciais (como PairIP, VMProtect for Mobile e variações do Mfuscator)
+    cifram as tabelas de strings e definições de classes do arquivo \`global-metadata.dat\`, descriptografando-as
+    somente em tempo de execução via chamadas internas da engine.
+
+    ### Mecanismo de Proteção Detectado
+
+    1. Cifragem de blocos de strings literais com chaves dinâmicas derivadas em tempo de carregamento da \`.so\`.
+    2. Supressão de cabeçalhos de metadados padrão para inviabilizar parsers genéricos (ex: Il2CppDumper).
+    3. Hook de funções internas (\`il2cpp::vm::MetadataCache\`) para redirecionamento sob demanda.
+
+    \`\`\`c
+    // Hook no il2cpp_init para interceptar metadados decifrados
+    void* (*orig_il2cpp_init)(const char* domain_name);
+    void* hook_il2cpp_init(const char* domain_name) {
+        void* result = orig_il2cpp_init(domain_name);
+
+        // Neste ponto da execução, a engine já realizou a decifragem
+        uintptr_t metadata_base = get_metadata_memory_base();
+        dump_decrypted_buffer(metadata_base, 0x1A40000, "/data/data/target/dump.dat");
+
+        return result;
+    }
+    \`\`\`
+
+    ### Pipeline de Reconstrução Automatizada
+
+    Para contornar o problema e permitir a abertura do binário em ferramentas como **dnSpy** e **Ghidra**,
+    desenvolvemos um script de reconstrução que:
+    - Mapeia as tabelas de tipos resolvidas pelo runtime.
+    - Reconstrói os offsets da \`Il2CppGlobalMetadataHeader\`.
+    - Gera um arquivo \`dummy assembly\` com a hierarquia completa de classes e métodos.
+            `
+          },
+          {
+            id: "bypass-anti-frida-arm64",
+            title: "Bypassing de Detecções de Anti-Frida e Anti-Debugging em ARM64",
+            date: "03/11/2026",
+            readTime: "6 min de leitura",
+            tags: ["Frida & Hooking", "ARM64 & NDK", "Anti-Cheat / Proteções"],
+            summary: "Como analisar e neutralizar verificações de integridade nativas: varreduras de /proc/self/maps,
+            threads de watchdog com ptrace e detecção de trampolines inline.",
+            content: `
+    ## Vetores Comuns de Detecção
+
+    Durante a instrumentação dinâmica de binários compilados em ARM64, as proteções nativas implementam verificações
+    em threads dedicadas para identificar a presença de ferramentas como o Frida.
+
+    ### 1. Varredura de Bibliotecas Carregadas em \`/proc/self/maps\`
+
+    As rotinas nativas abrem o descritor de arquivo via syscall direta (\`svc 0\`) para evitar hooks na libc,
+    procurando por strings como \`frida-gadget\` ou \`frida-agent\`.
+
+    \`\`\`armasm
+    // Syscall direta para openat em ARM64 evitando libc hooks
+    MOV     X0, #-100        // AT_FDCWD
+    LDR     X1, =str_maps    // "/proc/self/maps"
+    MOV     X2, #0           // O_RDONLY
+    MOV     X8, #56          // __NR_openat
+    SVC     #0               // Chamada de sistema nativa
+    \`\`\`
+
+    ### 2. Neutralização com Frida Stealth
+
+    Para neutralizar a checagem quando feita via syscalls ou wrappers de libc, interceptamos a leitura do descritor de
+    arquivo:
+
+    \`\`\`javascript
+    // Interceptação de leitura de maps para camuflar agentes de injeção
+    Interceptor.attach(Module.findExportByName(null, "strstr"), {
+        onEnter: function(args) {
+            const needle = args[1].readCString();
+            if (needle && (needle.includes("frida") || needle.includes("gum-js"))) {
+                this.spoof = true;
+            }
+        },
+        onLeave: function(retval) {
+            if (this.spoof) {
+                retval.replace(ptr(0x0)); // Retorna NULL como se não tivesse encontrado
+            }
+        }
+    });
+    \`\`\`
+            `
+          },
+          {
+            id: "analise-forense-spoofing-tokens",
+            title: "Engenharia Reversa de Mecanismos de Spoofing e Tráfego de Telemetria",
+            date: "28/10/2026",
+            readTime: "10 min de leitura",
+            tags: ["Forense", "Anti-Cheat / Proteções"],
+            summary: "Desconstrução de protocolos de comunicação proprietários, captura de payloads de telemetria e
+            validação de parâmetros de integridade de dispositivo.",
+            content: `
+    ## Metodologia de Investigação
+
+    Ao auditar a comunicação de telemetria entre aplicações móveis e servidores de monitoramento, o objetivo é isolar
+    quais identificadores exclusivos do dispositivo (IMEI, Android ID, tokens de push) são coletados e se a assinatura
+    da requisição é passível de impersonação.
+
+    > **Achado Chave:** A assinatura HMAC enviada no cabeçalho utilizava um segredo derivado de uma chave estática
+    embutida no binário ELF com uma simples máscara XOR.
+            `
+          }
+        ];
+
+        // ========================================================
+        // CONTROLADORES DA INTERFACE
+        // ========================================================
+        let currentTag = "Todos";
+
+        function getUniqueTags() {
+          const tags = new Set(["Todos"]);
+          posts.forEach(p => p.tags.forEach(t => tags.add(t)));
+          return Array.from(tags);
+        }
+
+        function renderTags() {
+          const container = document.getElementById("tags-container");
+          const tags = getUniqueTags();
+          container.innerHTML = tags.map(tag => `
+            <button onclick="selectTag('${tag}')" class="px-3 py-1 rounded border transition ${
+              currentTag === tag
+                ? 'bg-emerald-500 border-emerald-400 text-slate-950 font-bold'
+                : 'bg-[#0a0f1d] border-slate-800 text-slate-400 hover:border-slate-700 hover:text-emerald-400'
+            }">
+              # ${tag}
+            </button>
+          `).join('');
+        }
+
+        function selectTag(tag) {
+          currentTag = tag;
+          renderTags();
+          filterPosts();
+        }
+
+        function filterPosts() {
+          const query = document.getElementById("search-input").value.toLowerCase();
+          const filtered = posts.filter(post => {
+            const matchesTag = currentTag === "Todos" || post.tags.includes(currentTag);
+            const matchesQuery = post.title.toLowerCase().includes(query) ||
+                                 post.summary.toLowerCase().includes(query) ||
+                                 post.tags.some(t => t.toLowerCase().includes(query));
+            return matchesTag && matchesQuery;
+          });
+          renderPosts(filtered);
+        }
+
+        function renderPosts(list) {
+          const container = document.getElementById("posts-list");
+          if (list.length === 0) {
+            container.innerHTML = `
+              <div class="text-center py-12 text-slate-500 text-xs font-mono-code border border-dashed
+              border-slate-800 rounded-lg">
+                [!] Nenhum registro encontrado para os parâmetros informados.
+              </div>
+            `;
+            return;
+          }
+
+          container.innerHTML = list.map(post => `
+            <article class="p-6 bg-[#0a0f1d]/70 hover:bg-[#0c1322] border border-slate-800/80
+            hover:border-emerald-500/40 rounded-xl transition cursor-pointer group" onclick="openPost('${post.id}')">
+              <div class="flex items-center gap-2 text-xs font-mono-code text-slate-500 mb-2">
+                <span>[${post.date}]</span>
+                <span>•</span>
+                <span>${post.readTime}</span>
+              </div>
+              <h2 class="text-lg font-bold font-mono-code text-slate-100 group-hover:text-emerald-400 transition
+              mb-2">
+                ${post.title}
+              </h2>
+              <p class="text-sm text-slate-400 leading-relaxed mb-4">
+                ${post.summary}
+              </p>
+              <div class="flex flex-wrap gap-2">
+                ${post.tags.map(t => `<span class="text-[11px] font-mono-code bg-slate-900 text-emerald-400/90 px-2
+                py-0.5 rounded border border-emerald-950">${t}</span>`).join('')}
+              </div>
+            </article>
+          `).join('');
+        }
+
+        function openPost(postId) {
+          const post = posts.find(p => p.id === postId);
+          if (!post) return;
+
+          document.getElementById("home-view").classList.add("hidden");
+          document.getElementById("post-view").classList.remove("hidden");
+
+          document.getElementById("article-title").textContent = post.title;
+          document.getElementById("article-date").textContent = `DATA: ${post.date}`;
+          document.getElementById("article-read-time").textContent = post.readTime;
+          document.getElementById("article-tags").innerHTML = post.tags.map(t =>
+            `<span class="text-xs font-mono-code bg-emerald-950/60 text-emerald-400 px-2.5 py-1 rounded border
+            border-emerald-800/60">${t}</span>`
+          ).join('');
+
+          document.getElementById("article-content").innerHTML = marked.parse(post.content);
+          hljs.highlightAll();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showHome() {
+          document.getElementById("post-view").classList.add("hidden");
+          document.getElementById("home-view").classList.remove("hidden");
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Inicialização
+        renderTags();
+        renderPosts(posts);
+      </script>
     </body>
     </html>
